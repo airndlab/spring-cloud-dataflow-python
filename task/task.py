@@ -1,35 +1,21 @@
+import os
+
 import py_spring_dataflow.args
 import py_spring_dataflow.params
-from py_spring_dataflow.spring import datasource_props
-from py_spring_dataflow.spring.cloud.task import task_props
 
-from spring.spring_cloud_task_status import TaskStatus
+from spring import spring_cloud_task_status
 
-debug = py_spring_dataflow.params.get_flag('debug', False)
-
-if debug:
+if py_spring_dataflow.params.get_flag('debug', False):
     print(f'Arguments: {py_spring_dataflow.args.get_args()}')
 
-task_id = task_props.get_execution_id()
-print(f'Task id={task_id}')
-task_name = task_props.get_name()
-print(f'Task name={task_name}')
-
-db_url = datasource_props.get_url()
-db_username = datasource_props.get_username()
-db_password = datasource_props.get_password()
-
-task_status = TaskStatus(task_id, db_url, db_username, db_password)
-
+task_status = spring_cloud_task_status.new()
 try:
-    print('Starting')
+    print(f'Starting in "{os.getcwd()}"')
     task_status.start()
-
-    print('Execute main.py')
-    main_file = open('main.py')
-    main_code = main_file.read()
-    exec(main_code)
-
+    print('Execute entrypoint.py')
+    entrypoint_file = open('entrypoint.py')
+    entrypoint_code = entrypoint_file.read()
+    exec(entrypoint_code)
     task_status.completed()
     print('Competed')
 

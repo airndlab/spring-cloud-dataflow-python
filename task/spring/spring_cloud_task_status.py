@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from py_spring_dataflow.spring import datasource_props
+from py_spring_dataflow.spring.cloud.task import task_props
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
@@ -82,3 +84,11 @@ class TaskStatus:
 
     def finish(self):
         self.engine.dispose()
+
+
+def new():
+    task_id = task_props.get_execution_id()
+    db_url = datasource_props.get_url()
+    db_username = datasource_props.get_username()
+    db_password = datasource_props.get_password()
+    return TaskStatus(task_id, db_url, db_username, db_password)

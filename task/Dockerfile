@@ -1,6 +1,7 @@
 FROM python:3.11.0-slim-buster as base
 
 ENV TASK_HOME=/usr/src
+ENV TASK_ENTRYPOINT_HOME=$TASK_HOME/task
 
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONFAULTHANDLER=1
@@ -8,6 +9,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 
 ENV POETRY_NO_INTERACTION=1
 ENV POETRY_VIRTUALENVS_IN_PROJECT=1
+ENV POETRY_VIRTUALENVS_PATH=$TASK_HOME/.venv
 
 WORKDIR $TASK_HOME
 
@@ -27,17 +29,18 @@ COPY pyproject.toml poetry.lock ./
 
 RUN pip install poetry
 
-RUN poetry install --no-dev
+RUN poetry install --only main
 
 
 FROM base AS runtime
 
-COPY --from=builder $TASK_HOME/.venv .venv
+COPY --from=builder $POETRY_VIRTUALENVS_PATH $POETRY_VIRTUALENVS_PATH
 
 COPY . .
 
 RUN rm pyproject.toml poetry.lock
 
-ENTRYPOINT [".venv/bin/python", "task.py"]
+# $POETRY_VIRTUALENVS_PATH/bin/python $TASK_HOME/task.py
+ENTRYPOINT ["/usr/src/.venv/bin/python", "/usr/src/task.py"]
 
 CMD []
