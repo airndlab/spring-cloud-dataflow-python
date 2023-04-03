@@ -5,7 +5,7 @@ description = "description"
 authors = ["author"]
 
 [tool.poetry.dependencies]
-py-spring-dataflow = "0.4"
+py-spring-dataflow = "0.5"
 python = "^3.11"
 sqlalchemy = "^2.0.7"
 mysqlclient = "^2.1.1"

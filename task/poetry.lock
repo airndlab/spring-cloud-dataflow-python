@@ -93,14 +93,14 @@ files = [
 
 [[package]]
 name = "py-spring-dataflow"
-version = "0.4"
+version = "0.5"
 description = "For working with Spring Cloud Data Flow"
 category = "main"
 optional = false
 python-versions = ">=3.11,<4.0"
 files = [
-    {file = "py_spring_dataflow-0.4-py3-none-any.whl", hash = "sha256:6107727b54f81a964f650e4ff689c70406f7d2e06734952ee1dc4eead5a8cc76"},
-    {file = "py_spring_dataflow-0.4.tar.gz", hash = "sha256:128164e0b3d5c8a2d0a185f10f35dd0a8a27c4904e3ca93c5ef52a0aa69eea11"},
+    {file = "py_spring_dataflow-0.5-py3-none-any.whl", hash = "sha256:f6296b6fb6eae90404d3eb099c12939648b0dbde1e93142498b6fd3c14b0e90f"},
+    {file = "py_spring_dataflow-0.5.tar.gz", hash = "sha256:fdf6905ce2ff348319648a7bc2ea889070a3e1cf6a40b4129a2a89aa320b4683"},
 ]
 
 [[package]]
@@ -196,4 +196,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "a7b27ad4b182d3ab3f73cb65c52763b50346ac21dcc0ccff91e852c16a2a4ada"
+content-hash = "f6e58fe6f1a651e0a8b248812687753935e583090c572ec7250b4808b0fc0167"
