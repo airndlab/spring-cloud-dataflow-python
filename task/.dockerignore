@@ -1,4 +1,5 @@
-.dockerignore
-Dockerfile
-README.md
-*.iml
+*
+!spring/
+!poetry.lock
+!pyproject.toml
+!task.py
