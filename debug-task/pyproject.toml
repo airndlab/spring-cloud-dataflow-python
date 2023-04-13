@@ -1,0 +1,12 @@
+[tool.poetry]
+name = "spring-cloud-dataflow-python-debug-task"
+version = "0"
+description = "description"
+authors = ["author"]
+
+[tool.poetry.dependencies]
+python = "3.11"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
