@@ -31,7 +31,7 @@ RUN apt-get update \
 
 COPY pyproject.toml poetry.lock ./
 
-RUN pip install poetry==$POETRY_VERSION}
+RUN pip install poetry==$POETRY_VERSION
 
 RUN poetry install --only main
 
