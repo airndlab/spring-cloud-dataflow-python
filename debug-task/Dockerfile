@@ -1,4 +1,4 @@
-FROM airndlab/spring-cloud-dataflow-python-task:0.7 as base
+FROM airndlab/spring-cloud-dataflow-python-task:0.8 as base
 
 
 FROM base as builder

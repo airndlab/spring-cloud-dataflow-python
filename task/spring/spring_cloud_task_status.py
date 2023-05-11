@@ -1,94 +1,82 @@
 from datetime import datetime
 
+import psycopg2
 from py_spring_dataflow.spring import datasource_props
 from py_spring_dataflow.spring.cloud.task import task_props
-from sqlalchemy import create_engine
-from sqlalchemy.sql import text
 
 
 class TaskStatus:
     """
-    For working with table TASK_EXECUTION
+    For working with table task_execution
     """
 
-    def __init__(self, task_id, url, username, password):
+    def __init__(self, task_id, db_host, db_port, db_name, db_username, db_password):
         self.task_id = task_id
-        self.engine = create_engine(
-            url
-            .partition('?')[0]
-            .replace('jdbc:mariadb://', f'mariadb://{username}:{password}@'))
+        self.db_host = db_host
+        self.db_port = db_port
+        self.db_name = db_name
+        self.db_username = db_username
+        self.db_password = db_password
 
     def start(self):
-        """Set the TASK_EXECUTION's START_TIME """
-        now = datetime.now()
-        statement = text(
-            "UPDATE TASK_EXECUTION "
-            "SET START_TIME=:start_time, "
-            "    LAST_UPDATED=:last_updated, "
-            "    EXIT_CODE=null, "
-            "    EXIT_MESSAGE=null, "
-            "    ERROR_MESSAGE=null "
-            "WHERE TASK_EXECUTION_ID=:task_id")
-        params = {
-            'start_time': now,
-            'last_updated': now,
-            'task_id': self.task_id}
-        connection = self.engine.connect()
-        connection.execute(statement, params)
-        connection.commit()
-        connection.close()
+        """Set the task_execution's start_time """
+        with psycopg2.connect(
+                host=self.db_host, port=self.db_port, dbname=self.db_name,
+                user=self.db_username, password=self.db_password) as connection:
+            with connection.cursor() as cursor:
+                now = datetime.now()
+                sql = 'UPDATE task_execution ' \
+                      'SET start_time=%s, ' \
+                      '    last_updated=%s, ' \
+                      '    exit_code=null, ' \
+                      '    exit_message=null, ' \
+                      '    error_message=null ' \
+                      'WHERE task_execution_id=%s'
+                cursor.execute(sql, (now, now, self.task_id))
 
-    def completed(self):
-        """Set the TASK_EXECUTION's END_TIME, EXIST_CODE=0 and EXIST_MESSAGE/ERROR_MESSAGE must be null """
-        now = datetime.now()
-        statement = text(
-            "UPDATE TASK_EXECUTION "
-            "SET END_TIME=:end_time, "
-            "    LAST_UPDATED=:last_updated, "
-            "    EXIT_CODE=0, "
-            "    EXIT_MESSAGE=null, "
-            "    ERROR_MESSAGE=null "
-            "WHERE TASK_EXECUTION_ID=:task_id")
-        params = {
-            'end_time': now,
-            'last_updated': now,
-            'task_id': self.task_id}
-        connection = self.engine.connect()
-        connection.execute(statement, params)
-        connection.commit()
-        connection.close()
+    def complete(self):
+        """Set the task_execution's end_time, exist_code=0 and exist_message/error_message must be null """
+        with psycopg2.connect(
+                host=self.db_host, port=self.db_port, dbname=self.db_name,
+                user=self.db_username, password=self.db_password) as connection:
+            with connection.cursor() as cursor:
+                now = datetime.now()
+                sql = 'UPDATE task_execution ' \
+                      'SET end_time=%s, ' \
+                      '    last_updated=%s, ' \
+                      '    exit_code=0, ' \
+                      '    exit_message=null, ' \
+                      '    error_message=null ' \
+                      'WHERE task_execution_id=%s'
+                cursor.execute(sql, (now, now, self.task_id))
 
-    def failed(self, exit_code, exit_message, error_message=''):
-        """Set the TASK_EXECUTION's END_TIME, EXIST_CODE is the error code and EXIST_MESSAGE/ERROR_MESSAGE describe
-        the error """
-        now = datetime.now()
-        statement = text(
-            "UPDATE TASK_EXECUTION "
-            "SET END_TIME=:end_time, "
-            "    LAST_UPDATED=:last_updated, "
-            "    EXIT_CODE=:exit_code, "
-            "    EXIT_MESSAGE=:exit_message, "
-            "    ERROR_MESSAGE=:error_message "
-            "WHERE TASK_EXECUTION_ID=:task_id")
-        params = {
-            'end_time': now,
-            'last_updated': now,
-            'exit_code': exit_code,
-            'exit_message': exit_message,
-            'error_message': error_message,
-            'task_id': self.task_id}
-        connection = self.engine.connect()
-        connection.execute(statement, params)
-        connection.commit()
-        connection.close()
-
-    def finish(self):
-        self.engine.dispose()
+    def fail(self, exit_code, exit_message, error_message=''):
+        """Set the task_execution's end_time,
+        exist_code is the error code and exist_message/error_message describe the error """
+        with psycopg2.connect(
+                host=self.db_host, port=self.db_port, dbname=self.db_name,
+                user=self.db_username, password=self.db_password) as connection:
+            with connection.cursor() as cursor:
+                now = datetime.now()
+                sql = 'UPDATE task_execution ' \
+                      'SET end_time=%s, ' \
+                      '    last_updated=%s, ' \
+                      '    exit_code=%s, ' \
+                      '    exit_message=%s, ' \
+                      '    error_message=%s ' \
+                      'WHERE task_execution_id=%s'
+                cursor.execute(sql, (now, now, exit_code, exit_message, error_message, self.task_id))
 
 
 def new():
     task_id = task_props.get_execution_id()
+    # jdbc:postgresql://host:port/name?params
     db_url = datasource_props.get_url()
+    # host:port/name
+    host_port_name = db_url.partition('jdbc:postgresql://')[2].partition('?')[0]
+    db_host = host_port_name.partition(':')[0]
+    db_port = host_port_name.partition(':')[2].partition('/')[0]
+    db_name = host_port_name.partition('/')[2]
     db_username = datasource_props.get_username()
     db_password = datasource_props.get_password()
-    return TaskStatus(task_id, db_url, db_username, db_password)
+    return TaskStatus(task_id, db_host, db_port, db_name, db_username, db_password)

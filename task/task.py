@@ -16,14 +16,13 @@ try:
     entrypoint_file = open('entrypoint.py')
     entrypoint_code = entrypoint_file.read()
     exec(entrypoint_code)
-    task_status.completed()
+    task_status.complete()
     print('Competed')
 
 except Exception as exc:
     error_message = f'Failed: {exc}'
     print(error_message)
-    task_status.failed(1, error_message, error_message)
+    task_status.fail(1, error_message, error_message)
 
 finally:
-    task_status.finish()
     print('Finished')
