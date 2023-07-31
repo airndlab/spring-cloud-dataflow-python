@@ -1,11 +1,11 @@
-FROM airndlab/spring-cloud-dataflow-python-task:1.0 as base
+FROM airndlab/spring-cloud-dataflow-python-task:1.1 as base
 
 
 FROM base as builder
 
 COPY pyproject.toml poetry.lock ./
 
-RUN pip install poetry==${POETRY_VERSION}
+RUN pip install poetry==$POETRY_VERSION
 
 RUN poetry install --only main
 

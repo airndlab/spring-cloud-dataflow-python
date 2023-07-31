@@ -24,4 +24,4 @@ jobs:
         with:
           context: ./task
           push: true
-          tags: airndlab/spring-cloud-dataflow-python-task:1.0
+          tags: airndlab/spring-cloud-dataflow-python-task:1.1

@@ -1,0 +1,21 @@
+name: 'scdf-python-demo'
+
+services:
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_DB=scdf
+      - POSTGRES_USER=scdf
+      - POSTGRES_PASSWORD=scdf
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres/init-scripts:/docker-entrypoint-initdb.d
+
+  debug-task:
+    image: airndlab/spring-cloud-dataflow-python-debug-task:1.0
+    command:
+      - --spring.cloud.task.executionid=100500
+      - --spring.datasource.url=jdbc:postgresql://postgres:5432/scdf
+      - --spring.datasource.username=scdf
+      - --spring.datasource.password=scdf
