@@ -1,8 +1,11 @@
+import logging
 from datetime import datetime
 
 import psycopg2
 from py_spring_dataflow.spring import datasource_props
 from py_spring_dataflow.spring.cloud.task import task_props
+
+logger = logging.getLogger('TaskStatus')
 
 
 class TaskStatus:
@@ -20,6 +23,7 @@ class TaskStatus:
 
     def start(self):
         """Set the task_execution's start_time """
+        logger.info('Set status as started')
         with psycopg2.connect(
                 host=self.db_host, port=self.db_port, dbname=self.db_name,
                 user=self.db_username, password=self.db_password) as connection:
@@ -36,6 +40,7 @@ class TaskStatus:
 
     def complete(self):
         """Set the task_execution's end_time, exist_code=0 and exist_message/error_message must be null """
+        logger.info('Set status as completed')
         with psycopg2.connect(
                 host=self.db_host, port=self.db_port, dbname=self.db_name,
                 user=self.db_username, password=self.db_password) as connection:
@@ -53,6 +58,7 @@ class TaskStatus:
     def fail(self, exit_code, exit_message, error_message=''):
         """Set the task_execution's end_time,
         exist_code is the error code and exist_message/error_message describe the error """
+        logger.info('Set status as failed')
         with psycopg2.connect(
                 host=self.db_host, port=self.db_port, dbname=self.db_name,
                 user=self.db_username, password=self.db_password) as connection:
