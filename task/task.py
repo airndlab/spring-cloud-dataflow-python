@@ -27,7 +27,7 @@ try:
     logger.info('Completed execution')
 
 except Exception as exc:
-    exit_message = f'Failed: {exc}'
-    error_message = ''.join(traceback.format_exception(exc))
     logger.exception('Failed execution')
-    task_status.fail(1, exit_message, error_message)
+    short_message = f'Failed: {exc}'
+    stack_message = ''.join(traceback.format_exception(exc))
+    task_status.fail(short_message, stack_message)
